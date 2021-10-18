@@ -29,7 +29,9 @@ public class World extends JPanel {
     }
 
     private void generateGrid() {
-        for (int y = HEIGHT - 16 + INSETS.top; y >= INSETS.top + 16; y -= 32) {
+        System.out.println(INSETS.top);
+        System.out.println(HEIGHT);
+        for (int y = HEIGHT - 16 - INSETS.top; y >= INSETS.top + 16; y -= 32) {
             for (int x = 16; x <= WIDTH - 16; x += 32) {
                 blocks.add(new Block(new Vector2(x, y)));
             }

@@ -41,7 +41,7 @@ public class Game extends JFrame implements Runnable {
             @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
-                mousePosition = new Vector2(e.getX(), e.getY());
+                mousePosition = new Vector2(e.getX(), e.getY() - getInsets().top);
 
                 switch (gameMode) {
 
@@ -112,6 +112,9 @@ public class Game extends JFrame implements Runnable {
         //super.paint(g);
 
         g.clearRect(0, 0, WIDTH, HEIGHT);
+
+        paintBackground(g);
+
         Sprite._SPRITES.forEach(sprite -> {
             sprite.render(g, this);
         });
@@ -119,7 +122,12 @@ public class Game extends JFrame implements Runnable {
         paintUI(g);
     }
 
-    void paintUI(Graphics g) {
+    private void paintBackground(Graphics g) {
+        g.setColor(new Color(102, 149, 245));
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+    }
+
+    private void paintUI(Graphics g) {
         switch (gameMode) {
 
             case NORMAL:
@@ -132,7 +140,7 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    void drawEditModeUI(Graphics g) {
+    private void drawEditModeUI(Graphics g) {
         Block closestBlock = world.getClosestBlock();
         System.out.println("AM BERE");
         if (closestBlock != null) {
