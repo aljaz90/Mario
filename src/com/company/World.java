@@ -11,6 +11,9 @@ public class World extends JPanel {
     private List<Block> blocks;
     private int WIDTH, HEIGHT;
     private Insets INSETS;
+
+    // Edit mode variables
+    private Block placeholderBlock;
     private Block closestBlock;
 
     public Block getClosestBlock() {
@@ -24,6 +27,8 @@ public class World extends JPanel {
         this.WIDTH = WIDTH;
         this.HEIGHT = HEIGHT;
         this.INSETS = INSETS;
+
+        this.placeholderBlock = new Block(new Vector2(0, 0));
 
         generateGrid();
     }
@@ -55,6 +60,10 @@ public class World extends JPanel {
     }
 
     public void placeBlock() {
+
+    }
+
+    public void drawPlaceholderBlock(Graphics g) {
 
     }
 }

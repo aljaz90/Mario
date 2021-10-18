@@ -116,7 +116,9 @@ public class Game extends JFrame implements Runnable {
         paintBackground(g);
 
         Sprite._SPRITES.forEach(sprite -> {
-            sprite.render(g, this);
+            if (sprite.getVisibility() == EVisibility.VISIBLE) {
+                sprite.render(g, this);
+            }
         });
 
         paintUI(g);
@@ -129,11 +131,10 @@ public class Game extends JFrame implements Runnable {
 
     private void paintUI(Graphics g) {
         switch (gameMode) {
-
             case NORMAL:
                 break;
             case EDIT:
-                //drawEditModeUI(g);
+                world.drawPlaceholderBlock(g);
                 break;
             case PAUSED:
                 break;

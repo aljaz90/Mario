@@ -7,15 +7,6 @@ public class Block extends Sprite {
 
     private EBlockType blockType;
 
-    public EBlockType getBlockType() {
-        return blockType;
-    }
-
-    public void setBlockType(EBlockType blockType) {
-        this.blockType = blockType;
-        assignSpriteImage(blockType);
-    }
-
     public Block(EBlockType type, Vector2 position) {
         super(position, new Vector2(32, 32));
 
@@ -27,6 +18,15 @@ public class Block extends Sprite {
         super(position, new Vector2(32, 32));
 
         this.blockType = EBlockType.PLACEHOLDER;
+    }
+
+    public EBlockType getBlockType() {
+        return blockType;
+    }
+
+    public void setBlockType(EBlockType blockType) {
+        this.blockType = blockType;
+        assignSpriteImage(blockType);
     }
 
     private void assignSpriteImage(EBlockType type) {
