@@ -28,19 +28,21 @@ public class World extends JPanel {
         this.HEIGHT = HEIGHT;
         this.INSETS = INSETS;
 
-        this.placeholderBlock = new Block(new Vector2(0, 0));
-
         generateGrid();
+
+        this.placeholderBlock = new Block(EBlockType.BRICK, new Vector2(0, 0));
+        this.placeholderBlock.setOpacity(0.4);
     }
 
     private void generateGrid() {
         System.out.println(INSETS.top);
         System.out.println(HEIGHT);
-        for (int y = HEIGHT - 16 - INSETS.top; y >= INSETS.top + 16; y -= 32) {
+        for (int y = HEIGHT - 16 - INSETS.top; y >= 0; y -= 32) {
             for (int x = 16; x <= WIDTH - 16; x += 32) {
                 blocks.add(new Block(new Vector2(x, y)));
             }
         }
+        System.out.println(blocks.get(blocks.size() - 1).getPosition().toString());
     }
 
     public Block findClosestBlock(Vector2 position) {
@@ -63,7 +65,11 @@ public class World extends JPanel {
 
     }
 
-    public void drawPlaceholderBlock(Graphics g) {
+    public void updatePlaceholderBlock() {
+        this.placeholderBlock.setPosition(this.closestBlock.getPosition());
+    }
 
+    public void drawPlaceholderBlock(Graphics g, JFrame frame) {
+        placeholderBlock.render(g, frame);
     }
 }

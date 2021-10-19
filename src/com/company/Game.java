@@ -43,21 +43,11 @@ public class Game extends JFrame implements Runnable {
                 super.mouseMoved(e);
                 mousePosition = new Vector2(e.getX(), e.getY() - getInsets().top);
 
-                switch (gameMode) {
+                Block prevClosestBlock = world.getClosestBlock();
+                Block closestBlock = world.findClosestBlock(mousePosition);
 
-                    case NORMAL:
-                        break;
-                    case EDIT:
-                        Block prevClosestBlock = world.getClosestBlock();
-                        Block closestBlock = world.findClosestBlock(mousePosition);
-
-                        if (prevClosestBlock != null && prevClosestBlock != closestBlock) {
-                            prevClosestBlock.setBlockType(EBlockType.PLACEHOLDER);
-                            closestBlock.setBlockType(EBlockType.BRICK);
-                        }
-                        break;
-                    case PAUSED:
-                        break;
+                if (prevClosestBlock != null && prevClosestBlock != closestBlock) {
+                    world.updatePlaceholderBlock();
                 }
             }
         });
@@ -116,7 +106,7 @@ public class Game extends JFrame implements Runnable {
         paintBackground(g);
 
         Sprite._SPRITES.forEach(sprite -> {
-            if (sprite.getVisibility() == EVisibility.VISIBLE) {
+            if (sprite.getVisibility() == EVisibility.VISIBLE && sprite.getSpriteImage() != null) {
                 sprite.render(g, this);
             }
         });
@@ -134,7 +124,7 @@ public class Game extends JFrame implements Runnable {
             case NORMAL:
                 break;
             case EDIT:
-                world.drawPlaceholderBlock(g);
+                world.drawPlaceholderBlock(g, this);
                 break;
             case PAUSED:
                 break;
@@ -143,7 +133,7 @@ public class Game extends JFrame implements Runnable {
 
     private void drawEditModeUI(Graphics g) {
         Block closestBlock = world.getClosestBlock();
-        System.out.println("AM BERE");
+
         if (closestBlock != null) {
             g.setColor(Color.RED);
             g.fillRect(

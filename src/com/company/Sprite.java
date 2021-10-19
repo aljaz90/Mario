@@ -58,8 +58,14 @@ public class Sprite {
     public Vector2 getSize() {
         return size;
     }
+    public double getOpacity() {
+        return opacity;
+    }
 
     // Setters
+    public void setOpacity(double opacity) {
+        this.opacity = opacity;
+    }
     public void setVisibility(EVisibility visibility) {
         this.visibility = visibility;
     }
@@ -67,13 +73,6 @@ public class Sprite {
         this.collisionType = collisionType;
     }
     public void setSpriteImage(Image spriteImage) {
-        if (spriteImage == null && this.spriteImage != null) {
-            _SPRITES.remove(this);
-        }
-        else if (this.spriteImage == null) {
-            _SPRITES.add(this);
-        }
-
         this.spriteImage = spriteImage;
     }
     public void setPosition(Vector2 position) {
