@@ -45,6 +45,7 @@ public class Block extends Sprite {
                 imgPath = "src/resources/sprites/world/concrete.png";
                 break;
         }
+
         setSpriteImage(new ImageIcon(imgPath).getImage());
     }
 }

@@ -3,6 +3,7 @@ package com.company;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,14 +36,11 @@ public class World extends JPanel {
     }
 
     private void generateGrid() {
-        System.out.println(INSETS.top);
-        System.out.println(HEIGHT);
         for (int y = HEIGHT - 16 - INSETS.top; y >= 0; y -= 32) {
             for (int x = 16; x <= WIDTH - 16; x += 32) {
                 blocks.add(new Block(new Vector2(x, y)));
             }
         }
-        System.out.println(blocks.get(blocks.size() - 1).getPosition().toString());
     }
 
     public Block findClosestBlock(Vector2 position) {
@@ -62,7 +60,46 @@ public class World extends JPanel {
     }
 
     public void placeBlock() {
+        closestBlock.setVisibility(EVisibility.VISIBLE);
+        closestBlock.setBlockType(placeholderBlock.getBlockType());
+    }
 
+    public void nextPlaceholderBlock() {
+        EBlockType[] placeholderBlockTypes = { EBlockType.BRICK, EBlockType.BEDROCK, EBlockType.QUESTION, EBlockType.CONCRETE };
+
+        int currentIndex = 0;
+        for (EBlockType el : placeholderBlockTypes) {
+            if (el == placeholderBlock.getBlockType()) {
+                break;
+            }
+            currentIndex++;
+        }
+
+        currentIndex++;
+        if (currentIndex == placeholderBlockTypes.length) {
+            currentIndex = 0;
+        }
+
+        placeholderBlock.setBlockType(placeholderBlockTypes[currentIndex]);
+    }
+
+    public void previousPlaceholderBlock() {
+        EBlockType[] placeholderBlockTypes = { EBlockType.BRICK, EBlockType.BEDROCK, EBlockType.QUESTION, EBlockType.CONCRETE };
+
+        int currentIndex = 0;
+        for (EBlockType el : placeholderBlockTypes) {
+            if (el == placeholderBlock.getBlockType()) {
+                break;
+            }
+            currentIndex++;
+        }
+
+        currentIndex--;
+        if (currentIndex < 0) {
+            currentIndex = placeholderBlockTypes.length - 1;
+        }
+
+        placeholderBlock.setBlockType(placeholderBlockTypes[currentIndex]);
     }
 
     public void updatePlaceholderBlock() {

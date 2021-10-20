@@ -61,6 +61,7 @@ public class Game extends JFrame implements Runnable {
                     case NORMAL:
                         break;
                     case EDIT:
+                        world.placeBlock();
                         break;
                     case PAUSED:
                         break;
@@ -73,9 +74,17 @@ public class Game extends JFrame implements Runnable {
             public void keyTyped(KeyEvent e) {
                 super.keyTyped(e);
 
-                switch (e.getKeyChar()) {
-                    case '+':
+                switch (e.getExtendedKeyCode()) {
+                    case KeyEvent.VK_PLUS:
                         toggleEditMode();
+                        break;
+                    case KeyEvent.VK_E:
+                        if (gameMode == EGameMode.EDIT)
+                            world.nextPlaceholderBlock();
+                        break;
+                    case KeyEvent.VK_Q:
+                        if (gameMode == EGameMode.EDIT)
+                            world.previousPlaceholderBlock();
                         break;
                     default:
                         break;
