@@ -3,11 +3,12 @@ package com.company;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 
 public class Game extends JFrame implements Runnable {
 
-    private int WIDTH = 800;
-    private int HEIGHT = 500;
+    private int WIDTH = 1200;
+    private int HEIGHT = 600;
     private World world;
     private EGameMode gameMode = EGameMode.NORMAL;
     private Vector2 mousePosition = Vector2.ZERO;
@@ -16,6 +17,8 @@ public class Game extends JFrame implements Runnable {
         setLocationRelativeTo(null);
 
         setSize(new Dimension(WIDTH, HEIGHT));
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation(screenSize.width / 2 - WIDTH / 2, screenSize.height / 2 - HEIGHT / 2);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Mario");
@@ -71,7 +74,7 @@ public class Game extends JFrame implements Runnable {
 
         this.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
+            public void keyPressed(KeyEvent e) {
                 super.keyTyped(e);
 
                 switch (e.getExtendedKeyCode()) {
@@ -94,6 +97,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void toggleEditMode() {
+        System.out.println("TOGGLe");
         if (gameMode == EGameMode.NORMAL) {
             gameMode = EGameMode.EDIT;
         }
@@ -110,17 +114,21 @@ public class Game extends JFrame implements Runnable {
     public void paint(Graphics g) {
         //super.paint(g);
 
-        g.clearRect(0, 0, WIDTH, HEIGHT);
+        BufferedImage bufferedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = bufferedImage.createGraphics();
 
-        paintBackground(g);
+        paintBackground(g2d);
 
         Sprite._SPRITES.forEach(sprite -> {
             if (sprite.getVisibility() == EVisibility.VISIBLE && sprite.getSpriteImage() != null) {
-                sprite.render(g, this);
+                sprite.render(g2d, this);
             }
         });
 
-        paintUI(g);
+        paintUI(g2d);
+
+        Graphics2D g2dComponent = (Graphics2D) g;
+        g2dComponent.drawImage(bufferedImage, null, 0, 0);
     }
 
     private void paintBackground(Graphics g) {
