@@ -1,17 +1,18 @@
-package com.company;
+package cyou.equinox;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class World extends JPanel {
 
     private List<Block> blocks;
-    private int WIDTH, HEIGHT;
-    private Insets INSETS;
+    private final int WIDTH, HEIGHT;
+    private final Insets INSETS;
 
     // Edit mode variables
     private Block placeholderBlock;
@@ -19,6 +20,13 @@ public class World extends JPanel {
 
     public Block getClosestBlock() {
         return closestBlock;
+    }
+
+    private void initialiseWorld() {
+        generateGrid();
+
+        placeholderBlock = new Block(EBlockType.BRICK, new Vector2(0, 0));
+        placeholderBlock.setOpacity(0.4);
     }
 
     public World(int WIDTH, int HEIGHT, Insets INSETS) {
@@ -29,10 +37,23 @@ public class World extends JPanel {
         this.HEIGHT = HEIGHT;
         this.INSETS = INSETS;
 
-        generateGrid();
+        initialiseWorld();
+    }
 
-        this.placeholderBlock = new Block(EBlockType.BRICK, new Vector2(0, 0));
-        this.placeholderBlock.setOpacity(0.4);
+    public void loadMap (String mapName) throws Exception {
+        // Load map
+    }
+    public void saveMap (String mapName) throws Exception {
+        // Save map
+        File mapFile = new File(String.format("maps/%s.map", mapName));
+        if (!mapFile.exists()) {
+            mapFile.createNewFile();
+        }
+
+        FileOutputStream fileOutputStream = new FileOutputStream(mapFile);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+        objectOutputStream.writeObject(blocks);
     }
 
     private void generateGrid() {
@@ -65,7 +86,7 @@ public class World extends JPanel {
     }
 
     public void nextPlaceholderBlock() {
-        EBlockType[] placeholderBlockTypes = { EBlockType.BRICK, EBlockType.BEDROCK, EBlockType.QUESTION, EBlockType.CONCRETE };
+        EBlockType[] placeholderBlockTypes = { EBlockType.BRICK, EBlockType.BEDROCK, EBlockType.QUESTION, EBlockType.CONCRETE, EBlockType.PLACEHOLDER };
 
         int currentIndex = 0;
         for (EBlockType el : placeholderBlockTypes) {
@@ -84,7 +105,7 @@ public class World extends JPanel {
     }
 
     public void previousPlaceholderBlock() {
-        EBlockType[] placeholderBlockTypes = { EBlockType.BRICK, EBlockType.BEDROCK, EBlockType.QUESTION, EBlockType.CONCRETE };
+        EBlockType[] placeholderBlockTypes = { EBlockType.BRICK, EBlockType.BEDROCK, EBlockType.QUESTION, EBlockType.CONCRETE, EBlockType.PLACEHOLDER };
 
         int currentIndex = 0;
         for (EBlockType el : placeholderBlockTypes) {
@@ -103,7 +124,7 @@ public class World extends JPanel {
     }
 
     public void updatePlaceholderBlock() {
-        this.placeholderBlock.setPosition(this.closestBlock.getPosition());
+        placeholderBlock.setPosition(this.closestBlock.getPosition());
     }
 
     public void drawPlaceholderBlock(Graphics g, JFrame frame) {

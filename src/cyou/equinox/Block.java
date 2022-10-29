@@ -1,7 +1,6 @@
-package com.company;
+package cyou.equinox;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class Block extends Sprite {
 

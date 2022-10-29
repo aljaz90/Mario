@@ -1,6 +1,8 @@
-package com.company;
+package cyou.equinox;
 
-public class Vector2 {
+import java.io.Serializable;
+
+public class Vector2 implements Serializable {
     private int x;
     private int y;
 

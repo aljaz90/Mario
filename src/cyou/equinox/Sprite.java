@@ -1,13 +1,14 @@
-package com.company;
+package cyou.equinox;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Sprite {
+public class Sprite implements Serializable {
 
-    public static List<Sprite> _SPRITES = new ArrayList();
+    private static List<Sprite> _SPRITES = new ArrayList();
 
     private Image spriteImage;
     private Vector2 position;
@@ -100,6 +101,15 @@ public class Sprite {
             g2d.drawImage(getSpriteImage(), position.getX() - size.getX() / 2, position.getY() + insets.top - size.getY() / 2, size.getX(), size.getY(), frame);
         }
     }
+
+    public static void renderAll(Graphics2D g2d, JFrame frame) {
+        _SPRITES.forEach(sprite -> {
+            if (sprite.getVisibility() == EVisibility.VISIBLE && sprite.getSpriteImage() != null) {
+                sprite.render(g2d, frame);
+            }
+        });
+    }
+
 
     public void destroy() {
         _SPRITES.remove(this);

@@ -1,4 +1,4 @@
-package com.company;
+package cyou.equinox;
 
 public enum EBlockType {
     BRICK,

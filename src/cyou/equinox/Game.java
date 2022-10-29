@@ -1,4 +1,4 @@
-package com.company;
+package cyou.equinox;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,21 +7,25 @@ import java.awt.image.BufferedImage;
 
 public class Game extends JFrame implements Runnable {
 
-    private int WIDTH = 1200;
-    private int HEIGHT = 600;
+    private final int WIDTH;
+    private final int HEIGHT;
     private World world;
     private EGameMode gameMode = EGameMode.NORMAL;
     private Vector2 mousePosition = Vector2.ZERO;
 
-    public Game() {
-        setLocationRelativeTo(null);
+    public Game(int width, int height) {
+        WIDTH = width;
+        HEIGHT = height;
+
 
         setSize(new Dimension(WIDTH, HEIGHT));
+
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation(screenSize.width / 2 - WIDTH / 2, screenSize.height / 2 - HEIGHT / 2);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Mario");
+        setLocationRelativeTo(null);
         setResizable(false);
         setVisible(true);
 
@@ -34,7 +38,8 @@ public class Game extends JFrame implements Runnable {
                 update();
                 Thread.sleep(16);
             }
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -44,13 +49,32 @@ public class Game extends JFrame implements Runnable {
             @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
+
+                // Set global mouse position
                 mousePosition = new Vector2(e.getX(), e.getY() - getInsets().top);
 
-                Block prevClosestBlock = world.getClosestBlock();
-                Block closestBlock = world.findClosestBlock(mousePosition);
+                // Update position of the placeholder block
+                if (gameMode == EGameMode.EDIT) {
+                    updatePlaceholderBlock();
+                }
+            }
+        });
 
-                if (prevClosestBlock != null && prevClosestBlock != closestBlock) {
-                    world.updatePlaceholderBlock();
+        this.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+
+                switch (gameMode) {
+                    case NORMAL:
+                        break;
+                    case EDIT:
+                        if (e.getPreciseWheelRotation() < 0)
+                            world.nextPlaceholderBlock();
+                        else if (e.getPreciseWheelRotation() > 0)
+                            world.previousPlaceholderBlock();
+                        break;
+                    case PAUSED:
+                        break;
                 }
             }
         });
@@ -96,12 +120,26 @@ public class Game extends JFrame implements Runnable {
         });
     }
 
+    private void updatePlaceholderBlock() {
+        Block prevClosestBlock = world.getClosestBlock();
+        Block closestBlock = world.findClosestBlock(mousePosition);
+
+        if (prevClosestBlock != null && prevClosestBlock != closestBlock) {
+            world.updatePlaceholderBlock();
+        }
+    }
+
     private void toggleEditMode() {
-        System.out.println("TOGGLe");
         if (gameMode == EGameMode.NORMAL) {
             gameMode = EGameMode.EDIT;
         }
         else if (gameMode == EGameMode.EDIT) {
+            try {
+                world.saveMap("map001");
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
             gameMode = EGameMode.NORMAL;
         }
     }
@@ -114,19 +152,17 @@ public class Game extends JFrame implements Runnable {
     public void paint(Graphics g) {
         //super.paint(g);
 
+        // Paint sprites onto buffered image
         BufferedImage bufferedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bufferedImage.createGraphics();
 
         paintBackground(g2d);
 
-        Sprite._SPRITES.forEach(sprite -> {
-            if (sprite.getVisibility() == EVisibility.VISIBLE && sprite.getSpriteImage() != null) {
-                sprite.render(g2d, this);
-            }
-        });
+        Sprite.renderAll(g2d, this);
 
         paintUI(g2d);
 
+        // Render image onto the main canvas
         Graphics2D g2dComponent = (Graphics2D) g;
         g2dComponent.drawImage(bufferedImage, null, 0, 0);
     }
