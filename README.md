@@ -1,2 +1,2 @@
 # Mario
-An attempt of making Mario in Java
+An attempt at making Mario in Java
