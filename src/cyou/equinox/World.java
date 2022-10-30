@@ -1,10 +1,11 @@
 package cyou.equinox;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,18 +43,40 @@ public class World extends JPanel {
 
     public void loadMap (String mapName) throws Exception {
         // Load map
+        File mapFile = new File(String.format("maps/%s.json", mapName));
+        if (!mapFile.exists()) {
+            throw new Exception("Map file not found");
+        }
+
+        FileInputStream fileInputStream = new FileInputStream(mapFile);
+//        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+
+//        List<Block> newBlocks = (ArrayList<Block>) objectInputStream.readObject();
+//        System.out.println("SIZED");
+//        System.out.println(newBlocks.size());
+//        blocks = newBlocks;
+//        Sprite.rebufferImages();
     }
-    public void saveMap (String mapName) throws Exception {
-        // Save map
-        File mapFile = new File(String.format("maps/%s.map", mapName));
+    public void saveWorld (String mapName) throws Exception {
+        File mapFile = new File(String.format("maps/%s.json", mapName));
         if (!mapFile.exists()) {
             mapFile.createNewFile();
         }
 
-        FileOutputStream fileOutputStream = new FileOutputStream(mapFile);
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        // Stringifying blocks
+        JSONArray serializedBlocks = new JSONArray();
+        for (Block block : blocks) {
+            serializedBlocks.put(block.toJsonObject());
+        }
 
-        objectOutputStream.writeObject(blocks);
+        // Create json object and add data
+        JSONObject objectToWrite = new JSONObject();
+        objectToWrite.put("name", mapName);
+        objectToWrite.put("blocks", serializedBlocks);
+
+        // Write json string to file
+        FileOutputStream fileOutputStream = new FileOutputStream(mapFile);
+        fileOutputStream.write(objectToWrite.toString().getBytes());
     }
 
     private void generateGrid() {

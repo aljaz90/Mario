@@ -1,5 +1,7 @@
 package cyou.equinox;
 
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 public class Vector2 implements Serializable {
@@ -31,6 +33,15 @@ public class Vector2 implements Serializable {
 
     public static double distance(Vector2 a, Vector2 b) {
         return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
+    }
+
+    public JSONObject toJsonObject() {
+        JSONObject objectToReturn = new JSONObject();
+
+        objectToReturn.put("x", x);
+        objectToReturn.put("y", y);
+
+        return objectToReturn;
     }
 
     public String toString() {

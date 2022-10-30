@@ -30,6 +30,11 @@ public class Game extends JFrame implements Runnable {
         setVisible(true);
 
         world = new World(WIDTH, HEIGHT, getInsets());
+        try {
+            world.loadMap("map001");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         setupEventListeners();
 
@@ -135,7 +140,7 @@ public class Game extends JFrame implements Runnable {
         }
         else if (gameMode == EGameMode.EDIT) {
             try {
-                world.saveMap("map001");
+                world.saveWorld("map001");
             }
             catch (Exception e) {
                 e.printStackTrace();

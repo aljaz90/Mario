@@ -1,6 +1,6 @@
 package cyou.equinox;
 
-import javax.swing.*;
+import org.json.JSONObject;
 
 public class Block extends Sprite {
 
@@ -28,6 +28,16 @@ public class Block extends Sprite {
         assignSpriteImage(blockType);
     }
 
+    @Override
+    public JSONObject toJsonObject() {
+        JSONObject objectToReturn = new JSONObject();
+
+        objectToReturn.put("blockType", blockType.name());
+        objectToReturn.put("position", position.toJsonObject());
+
+        return objectToReturn;
+    }
+
     private void assignSpriteImage(EBlockType type) {
         String imgPath = "";
         switch (type) {
@@ -45,6 +55,6 @@ public class Block extends Sprite {
                 break;
         }
 
-        setSpriteImage(new ImageIcon(imgPath).getImage());
+        setSpriteImage(imgPath);
     }
 }

@@ -1,18 +1,22 @@
 package cyou.equinox;
 
+import org.json.JSONObject;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Sprite implements Serializable {
 
     private static List<Sprite> _SPRITES = new ArrayList();
+    private static HashMap<String, Image> _IMAGE_BUFFER = new HashMap<String, Image>();
 
-    private Image spriteImage;
-    private Vector2 position;
-    private Vector2 size;
+    private String spriteImage;
+    protected Vector2 position;
+    protected Vector2 size;
 
     private ECollisionType collisionType;
     private EVisibility visibility;
@@ -20,14 +24,14 @@ public class Sprite implements Serializable {
     private double opacity = 1.0;
 
     // Constructors
-    public Sprite(Image image, Vector2 position, Vector2 size) {
+    public Sprite(String image, Vector2 position, Vector2 size) {
         _SPRITES.add(this);
-        this.spriteImage = image;
         this.position = position;
         this.size = size;
 
         this.visibility = EVisibility.VISIBLE;
 
+        setSpriteImage(image);
     }
     public Sprite(Vector2 position, Vector2 size) {
         _SPRITES.add(this);
@@ -36,7 +40,6 @@ public class Sprite implements Serializable {
 
         this.visibility = EVisibility.INVISIBLE;
     }
-
     public Sprite() {
         _SPRITES.add(this);
 
@@ -51,7 +54,11 @@ public class Sprite implements Serializable {
         return collisionType;
     }
     public Image getSpriteImage() {
-        return spriteImage;
+        if (_IMAGE_BUFFER.containsKey(spriteImage)) {
+            return _IMAGE_BUFFER.get(spriteImage);
+        }
+
+        return null;
     }
     public Vector2 getPosition() {
         return position;
@@ -73,7 +80,12 @@ public class Sprite implements Serializable {
     public void setCollisionType(ECollisionType collisionType) {
         this.collisionType = collisionType;
     }
-    public void setSpriteImage(Image spriteImage) {
+    public void setSpriteImage(String spriteImage) {
+        if (!_IMAGE_BUFFER.containsKey(spriteImage)) {
+            Image img = new ImageIcon(spriteImage).getImage();
+            _IMAGE_BUFFER.put(spriteImage, img);
+        }
+
         this.spriteImage = spriteImage;
     }
     public void setPosition(Vector2 position) {
@@ -84,6 +96,19 @@ public class Sprite implements Serializable {
     }
 
     // Methods
+
+    public JSONObject toJsonObject() {
+        JSONObject objectToReturn = new JSONObject();
+
+        objectToReturn.put("spriteImage", spriteImage);
+        objectToReturn.put("opacity", opacity);
+        objectToReturn.put("position", position.toJsonObject());
+        objectToReturn.put("size", size.toJsonObject());
+        objectToReturn.put("collisionType", collisionType.name());
+        objectToReturn.put("visibility", visibility.name());
+
+        return objectToReturn;
+    }
 
     public void render(Graphics g, JFrame frame) {
         Graphics2D g2d = (Graphics2D) g;
@@ -109,7 +134,6 @@ public class Sprite implements Serializable {
             }
         });
     }
-
 
     public void destroy() {
         _SPRITES.remove(this);
