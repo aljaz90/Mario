@@ -31,7 +31,7 @@ public class Game extends JFrame implements Runnable {
 
         world = new World(WIDTH, HEIGHT, getInsets());
         try {
-            world.loadMap("map001");
+            world.loadWorld("map001");
         } catch (Exception e) {
             e.printStackTrace();
         }

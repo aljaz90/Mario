@@ -41,21 +41,26 @@ public class World extends JPanel {
         initialiseWorld();
     }
 
-    public void loadMap (String mapName) throws Exception {
-        // Load map
+    public void loadWorld (String mapName) throws Exception {
         File mapFile = new File(String.format("maps/%s.json", mapName));
         if (!mapFile.exists()) {
             throw new Exception("Map file not found");
         }
 
         FileInputStream fileInputStream = new FileInputStream(mapFile);
-//        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        fileInputStream.readAllBytes();
+//        String jsonString = fileInputStream.readAllBytes().toString();
 
-//        List<Block> newBlocks = (ArrayList<Block>) objectInputStream.readObject();
-//        System.out.println("SIZED");
-//        System.out.println(newBlocks.size());
-//        blocks = newBlocks;
-//        Sprite.rebufferImages();
+//        JSONObject jsonObject = new JSONObject(jsonString);
+//        JSONArray serializedBlocks = jsonObject.getJSONArray("blocks");
+//
+//        for (int i = 0; i < serializedBlocks.length(); i++) {
+//            JSONObject serializedBlock = serializedBlocks.getJSONObject(i);
+//            JSONObject serializedPosition = serializedBlock.getJSONObject("position");
+//            Vector2 blockPosition = new Vector2(serializedPosition.getInt("x"), serializedPosition.getInt("y"));
+//
+//            blocks.add(new Block(EBlockType.valueOf(serializedBlock.getString("blockType")), blockPosition));
+//        }
     }
     public void saveWorld (String mapName) throws Exception {
         File mapFile = new File(String.format("maps/%s.json", mapName));
