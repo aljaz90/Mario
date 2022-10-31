@@ -13,10 +13,12 @@ public class Game extends JFrame implements Runnable {
     private EGameMode gameMode = EGameMode.NORMAL;
     private Vector2 mousePosition = Vector2.ZERO;
 
-    public Game(int width, int height) {
-        WIDTH = width;
-        HEIGHT = height;
+    // Edit mode
+    private Block placeholderBlock;
 
+    public Game(int width, int height) {
+        WIDTH = width + 16;
+        HEIGHT = height + 39;
 
         setSize(new Dimension(WIDTH, HEIGHT));
 
@@ -30,6 +32,7 @@ public class Game extends JFrame implements Runnable {
         setVisible(true);
 
         world = new World(WIDTH, HEIGHT, getInsets());
+
         try {
             world.loadWorld("map001");
         } catch (Exception e) {
@@ -74,9 +77,9 @@ public class Game extends JFrame implements Runnable {
                         break;
                     case EDIT:
                         if (e.getPreciseWheelRotation() < 0)
-                            world.nextPlaceholderBlock();
+                            nextPlaceholderBlock();
                         else if (e.getPreciseWheelRotation() > 0)
-                            world.previousPlaceholderBlock();
+                            previousPlaceholderBlock();
                         break;
                     case PAUSED:
                         break;
@@ -93,7 +96,7 @@ public class Game extends JFrame implements Runnable {
                     case NORMAL:
                         break;
                     case EDIT:
-                        world.placeBlock();
+                        handleClickInEdit();
                         break;
                     case PAUSED:
                         break;
@@ -112,11 +115,11 @@ public class Game extends JFrame implements Runnable {
                         break;
                     case KeyEvent.VK_E:
                         if (gameMode == EGameMode.EDIT)
-                            world.nextPlaceholderBlock();
+                            nextPlaceholderBlock();
                         break;
                     case KeyEvent.VK_Q:
                         if (gameMode == EGameMode.EDIT)
-                            world.previousPlaceholderBlock();
+                            previousPlaceholderBlock();
                         break;
                     default:
                         break;
@@ -125,21 +128,40 @@ public class Game extends JFrame implements Runnable {
         });
     }
 
-    private void updatePlaceholderBlock() {
-        Block prevClosestBlock = world.getClosestBlock();
-        Block closestBlock = world.findClosestBlock(mousePosition);
+    private void handleClickInEdit() {
+        if (placeholderBlock != null) {
+            Block clickedBlock = world.getGridBlockAtPosition(placeholderBlock.getPosition());
+            if (clickedBlock != null) {
+                if (placeholderBlock.getBlockType() == EBlockType.PLACEHOLDER) {
+                    world.removeBlock(clickedBlock);
+                }
+                else {
+                    clickedBlock.setBlockType(placeholderBlock.getBlockType());
+                }
+            }
+            else {
+                world.placeBlock(placeholderBlock.getBlockType(), placeholderBlock.getPosition());
+            }
+        }
+    }
 
-        if (prevClosestBlock != null && prevClosestBlock != closestBlock) {
-            world.updatePlaceholderBlock();
+    private void updatePlaceholderBlock() {
+        if (placeholderBlock != null) {
+            Vector2 newPosition = world.getClosestGridBlockPosition(mousePosition);
+            placeholderBlock.setPosition(newPosition);
         }
     }
 
     private void toggleEditMode() {
         if (gameMode == EGameMode.NORMAL) {
+            placeholderBlock = new Block(EBlockType.BRICK, Vector2.ZERO);
+            placeholderBlock.setOpacity(0.6);
             gameMode = EGameMode.EDIT;
         }
         else if (gameMode == EGameMode.EDIT) {
             try {
+                placeholderBlock.destroy();
+                placeholderBlock = null;
                 world.saveWorld("map001");
             }
             catch (Exception e) {
@@ -182,7 +204,7 @@ public class Game extends JFrame implements Runnable {
             case NORMAL:
                 break;
             case EDIT:
-                world.drawPlaceholderBlock(g, this);
+//                world.drawPlaceholderBlock(g, this);
                 break;
             case PAUSED:
                 break;
@@ -201,6 +223,44 @@ public class Game extends JFrame implements Runnable {
                     closestBlock.getSize().getY()
             );
         }
+    }
+
+    private void nextPlaceholderBlock() {
+        EBlockType[] placeholderBlockTypes = { EBlockType.BRICK, EBlockType.BEDROCK, EBlockType.QUESTION, EBlockType.CONCRETE, EBlockType.PLACEHOLDER };
+
+        int currentIndex = 0;
+        for (EBlockType el : placeholderBlockTypes) {
+            if (el == placeholderBlock.getBlockType()) {
+                break;
+            }
+            currentIndex++;
+        }
+
+        currentIndex++;
+        if (currentIndex == placeholderBlockTypes.length) {
+            currentIndex = 0;
+        }
+
+        placeholderBlock.setBlockType(placeholderBlockTypes[currentIndex]);
+    }
+
+    private void previousPlaceholderBlock() {
+        EBlockType[] placeholderBlockTypes = { EBlockType.BRICK, EBlockType.BEDROCK, EBlockType.QUESTION, EBlockType.CONCRETE, EBlockType.PLACEHOLDER };
+
+        int currentIndex = 0;
+        for (EBlockType el : placeholderBlockTypes) {
+            if (el == placeholderBlock.getBlockType()) {
+                break;
+            }
+            currentIndex++;
+        }
+
+        currentIndex--;
+        if (currentIndex < 0) {
+            currentIndex = placeholderBlockTypes.length - 1;
+        }
+
+        placeholderBlock.setBlockType(placeholderBlockTypes[currentIndex]);
     }
 
     @Override

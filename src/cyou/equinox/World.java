@@ -26,10 +26,10 @@ public class World extends JPanel {
     }
 
     private void initialiseWorld() {
-        generateGrid();
+//        generateGrid();
 
-        placeholderBlock = new Block(EBlockType.BRICK, new Vector2(0, 0));
-        placeholderBlock.setOpacity(0.4);
+//        placeholderBlock = new Block(EBlockType.BRICK, new Vector2(0, 0));
+//        placeholderBlock.setOpacity(0.4);
     }
 
     public World(int WIDTH, int HEIGHT, Insets INSETS) {
@@ -60,8 +60,6 @@ public class World extends JPanel {
             JSONObject serializedPosition = serializedBlock.getJSONObject("position");
             Vector2 blockPosition = new Vector2(serializedPosition.getInt("x"), serializedPosition.getInt("y"));
 
-            System.out.println(blockPosition);
-
             blocks.add(new Block(EBlockType.valueOf(serializedBlock.getString("blockType")), blockPosition));
         }
     }
@@ -87,71 +85,31 @@ public class World extends JPanel {
         fileOutputStream.write(objectToWrite.toString().getBytes());
     }
 
-    private void generateGrid() {
-        for (int y = HEIGHT - 16 - INSETS.top; y >= 0; y -= 32) {
-            for (int x = 16; x <= WIDTH - 16; x += 32) {
-                blocks.add(new Block(new Vector2(x, y)));
-            }
-        }
+    public Vector2 getClosestGridBlockPosition(Vector2 to) {
+        int newX = (to.getX() / 32) * 32 + 16 + INSETS.left;
+        int newY = (to.getY() / 32) * 32 + 16;
+
+        return new Vector2(newX, newY);
     }
 
-    public Block findClosestBlock(Vector2 position) {
-        double smallestDistance = Double.MAX_VALUE;
-        Block closestBlock = null;
-
+    public Block getGridBlockAtPosition(Vector2 to) {
         for (Block block : blocks) {
-            double distance = Vector2.distance(block.getPosition(), position);
-            if (distance < smallestDistance) {
-                smallestDistance = distance;
-                closestBlock = block;
+            if (block.getPosition() == to) {
+                return block;
             }
         }
 
-        this.closestBlock = closestBlock;
-        return closestBlock;
+        return null;
     }
 
-    public void placeBlock() {
-        closestBlock.setVisibility(EVisibility.VISIBLE);
-        closestBlock.setBlockType(placeholderBlock.getBlockType());
+    public void removeBlock(Block block) {
+        blocks.remove(block);
+        block.destroy();
     }
 
-    public void nextPlaceholderBlock() {
-        EBlockType[] placeholderBlockTypes = { EBlockType.BRICK, EBlockType.BEDROCK, EBlockType.QUESTION, EBlockType.CONCRETE, EBlockType.PLACEHOLDER };
-
-        int currentIndex = 0;
-        for (EBlockType el : placeholderBlockTypes) {
-            if (el == placeholderBlock.getBlockType()) {
-                break;
-            }
-            currentIndex++;
-        }
-
-        currentIndex++;
-        if (currentIndex == placeholderBlockTypes.length) {
-            currentIndex = 0;
-        }
-
-        placeholderBlock.setBlockType(placeholderBlockTypes[currentIndex]);
-    }
-
-    public void previousPlaceholderBlock() {
-        EBlockType[] placeholderBlockTypes = { EBlockType.BRICK, EBlockType.BEDROCK, EBlockType.QUESTION, EBlockType.CONCRETE, EBlockType.PLACEHOLDER };
-
-        int currentIndex = 0;
-        for (EBlockType el : placeholderBlockTypes) {
-            if (el == placeholderBlock.getBlockType()) {
-                break;
-            }
-            currentIndex++;
-        }
-
-        currentIndex--;
-        if (currentIndex < 0) {
-            currentIndex = placeholderBlockTypes.length - 1;
-        }
-
-        placeholderBlock.setBlockType(placeholderBlockTypes[currentIndex]);
+    public void placeBlock(EBlockType type, Vector2 position) {
+        Block newBlock = new Block(type, position);
+        blocks.add(newBlock);
     }
 
     public void updatePlaceholderBlock() {
