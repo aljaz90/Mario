@@ -38,7 +38,7 @@ public class Sprite implements Serializable {
         this.position = position;
         this.size = size;
 
-        this.visibility = EVisibility.INVISIBLE;
+        this.visibility = EVisibility.VISIBLE;
     }
     public Sprite() {
         _SPRITES.add(this);

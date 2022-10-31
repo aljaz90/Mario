@@ -6,6 +6,8 @@ import org.json.JSONObject;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,25 +44,26 @@ public class World extends JPanel {
     }
 
     public void loadWorld (String mapName) throws Exception {
-        File mapFile = new File(String.format("maps/%s.json", mapName));
+        String fileName = String.format("maps/%s.json", mapName);
+        File mapFile = new File(fileName);
         if (!mapFile.exists()) {
             throw new Exception("Map file not found");
         }
 
-        FileInputStream fileInputStream = new FileInputStream(mapFile);
-        fileInputStream.readAllBytes();
-//        String jsonString = fileInputStream.readAllBytes().toString();
+        String jsonString = new String(Files.readAllBytes(Paths.get(fileName)));;
 
-//        JSONObject jsonObject = new JSONObject(jsonString);
-//        JSONArray serializedBlocks = jsonObject.getJSONArray("blocks");
-//
-//        for (int i = 0; i < serializedBlocks.length(); i++) {
-//            JSONObject serializedBlock = serializedBlocks.getJSONObject(i);
-//            JSONObject serializedPosition = serializedBlock.getJSONObject("position");
-//            Vector2 blockPosition = new Vector2(serializedPosition.getInt("x"), serializedPosition.getInt("y"));
-//
-//            blocks.add(new Block(EBlockType.valueOf(serializedBlock.getString("blockType")), blockPosition));
-//        }
+        JSONObject jsonObject = new JSONObject(jsonString);
+        JSONArray serializedBlocks = jsonObject.getJSONArray("blocks");
+
+        for (int i = 0; i < serializedBlocks.length(); i++) {
+            JSONObject serializedBlock = serializedBlocks.getJSONObject(i);
+            JSONObject serializedPosition = serializedBlock.getJSONObject("position");
+            Vector2 blockPosition = new Vector2(serializedPosition.getInt("x"), serializedPosition.getInt("y"));
+
+            System.out.println(blockPosition);
+
+            blocks.add(new Block(EBlockType.valueOf(serializedBlock.getString("blockType")), blockPosition));
+        }
     }
     public void saveWorld (String mapName) throws Exception {
         File mapFile = new File(String.format("maps/%s.json", mapName));
