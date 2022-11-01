@@ -14,36 +14,28 @@ import java.util.List;
 public class World extends JPanel {
 
     private List<Block> blocks;
+
     private final int WIDTH, HEIGHT;
     private final Insets INSETS;
 
-    // Edit mode variables
-    private Block placeholderBlock;
-    private Block closestBlock;
-
-    public Block getClosestBlock() {
-        return closestBlock;
-    }
-
-    private void initialiseWorld() {
-//        generateGrid();
-
-//        placeholderBlock = new Block(EBlockType.BRICK, new Vector2(0, 0));
-//        placeholderBlock.setOpacity(0.4);
-    }
-
     public World(int WIDTH, int HEIGHT, Insets INSETS) {
         blocks = new ArrayList<>();
-        closestBlock = null;
 
         this.WIDTH = WIDTH;
         this.HEIGHT = HEIGHT;
         this.INSETS = INSETS;
-
-        initialiseWorld();
     }
 
+    public void clearWorld() {
+        for (Block block : blocks) {
+            block.destroy();
+        }
+
+        blocks = new ArrayList<>();
+    }
     public void loadWorld (String mapName) throws Exception {
+        clearWorld();
+
         String fileName = String.format("maps/%s.json", mapName);
         File mapFile = new File(fileName);
         if (!mapFile.exists()) {
@@ -110,13 +102,5 @@ public class World extends JPanel {
     public void placeBlock(EBlockType type, Vector2 position) {
         Block newBlock = new Block(type, position);
         blocks.add(newBlock);
-    }
-
-    public void updatePlaceholderBlock() {
-        placeholderBlock.setPosition(this.closestBlock.getPosition());
-    }
-
-    public void drawPlaceholderBlock(Graphics g, JFrame frame) {
-        placeholderBlock.render(g, frame);
     }
 }

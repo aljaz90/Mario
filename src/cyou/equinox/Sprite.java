@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,10 +23,21 @@ public class Sprite implements Serializable {
     private EVisibility visibility;
 
     private double opacity = 1.0;
+    private int zIndex = 0;
+
+    private void addToInstances() {
+        int i = 0;
+        for (Sprite sprite : _SPRITES) {
+            if (zIndex <= sprite.zIndex) break;
+            i++;
+        }
+        _SPRITES.add(i, this);
+    }
 
     // Constructors
     public Sprite(String image, Vector2 position, Vector2 size) {
-        _SPRITES.add(this);
+        addToInstances();
+
         this.position = position;
         this.size = size;
 
@@ -34,15 +46,15 @@ public class Sprite implements Serializable {
         setSpriteImage(image);
     }
     public Sprite(Vector2 position, Vector2 size) {
-        _SPRITES.add(this);
+        addToInstances();
+
         this.position = position;
         this.size = size;
 
         this.visibility = EVisibility.VISIBLE;
     }
     public Sprite() {
-        _SPRITES.add(this);
-
+        addToInstances();
         this.visibility = EVisibility.INVISIBLE;
     }
 
@@ -69,6 +81,9 @@ public class Sprite implements Serializable {
     public double getOpacity() {
         return opacity;
     }
+    public int getZIndex() {
+        return zIndex;
+    }
 
     // Setters
     public void setOpacity(double opacity) {
@@ -94,9 +109,12 @@ public class Sprite implements Serializable {
     public void setSize(Vector2 size) {
         this.size = size;
     }
+    public void setZIndex(int zIndex) {
+        this.zIndex = zIndex;
+        _SPRITES.sort(Comparator.comparingInt(a -> a.zIndex));
+    }
 
     // Methods
-
     public JSONObject toJsonObject() {
         JSONObject objectToReturn = new JSONObject();
 

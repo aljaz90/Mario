@@ -9,7 +9,10 @@ public class Game extends JFrame implements Runnable {
 
     private final int WIDTH;
     private final int HEIGHT;
+
     private World world;
+    private UIManager uiManager;
+
     private EGameMode gameMode = EGameMode.NORMAL;
     private Vector2 mousePosition = Vector2.ZERO;
 
@@ -31,23 +34,23 @@ public class Game extends JFrame implements Runnable {
         setResizable(false);
         setVisible(true);
 
+        uiManager = new UIManager(WIDTH, HEIGHT, getInsets());
         world = new World(WIDTH, HEIGHT, getInsets());
-
-        try {
-            world.loadWorld("map001");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         setupEventListeners();
 
         try {
+            world.loadWorld("map001");
+
             while(true){
                 update();
                 Thread.sleep(16);
             }
         }
         catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -155,6 +158,7 @@ public class Game extends JFrame implements Runnable {
     private void toggleEditMode() {
         if (gameMode == EGameMode.NORMAL) {
             placeholderBlock = new Block(EBlockType.BRICK, Vector2.ZERO);
+            placeholderBlock.setZIndex(1);
             placeholderBlock.setOpacity(0.6);
             gameMode = EGameMode.EDIT;
         }
@@ -187,8 +191,6 @@ public class Game extends JFrame implements Runnable {
 
         Sprite.renderAll(g2d, this);
 
-        paintUI(g2d);
-
         // Render image onto the main canvas
         Graphics2D g2dComponent = (Graphics2D) g;
         g2dComponent.drawImage(bufferedImage, null, 0, 0);
@@ -197,32 +199,6 @@ public class Game extends JFrame implements Runnable {
     private void paintBackground(Graphics g) {
         g.setColor(new Color(102, 149, 245));
         g.fillRect(0, 0, WIDTH, HEIGHT);
-    }
-
-    private void paintUI(Graphics g) {
-        switch (gameMode) {
-            case NORMAL:
-                break;
-            case EDIT:
-//                world.drawPlaceholderBlock(g, this);
-                break;
-            case PAUSED:
-                break;
-        }
-    }
-
-    private void drawEditModeUI(Graphics g) {
-        Block closestBlock = world.getClosestBlock();
-
-        if (closestBlock != null) {
-            g.setColor(Color.RED);
-            g.fillRect(
-                    closestBlock.getPosition().getX() - closestBlock.getSize().getX() / 2,
-                    closestBlock.getPosition().getY() - closestBlock.getSize().getY() / 2,
-                    closestBlock.getSize().getX(),
-                    closestBlock.getSize().getY()
-            );
-        }
     }
 
     private void nextPlaceholderBlock() {
