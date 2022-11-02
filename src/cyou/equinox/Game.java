@@ -10,6 +10,7 @@ public class Game extends JFrame implements Runnable {
     private final int WIDTH;
     private final int HEIGHT;
 
+    // Control classes
     private World world;
     private UIManager uiManager;
 
@@ -43,7 +44,7 @@ public class Game extends JFrame implements Runnable {
             world.loadWorld("map001");
 
             while(true){
-                update();
+                tick();
                 Thread.sleep(16);
             }
         }
@@ -175,21 +176,28 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    private void update() {
+    private void tick() {
+        update();
         repaint();
+    }
+
+    private void update() {
+        // Do things
     }
 
     @Override
     public void paint(Graphics g) {
-        //super.paint(g);
 
         // Paint sprites onto buffered image
         BufferedImage bufferedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bufferedImage.createGraphics();
 
+        // Render world
         paintBackground(g2d);
-
         Sprite.renderAll(g2d, this);
+
+        // Render UI
+        uiManager.render(g2d);
 
         // Render image onto the main canvas
         Graphics2D g2dComponent = (Graphics2D) g;

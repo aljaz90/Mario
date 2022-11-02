@@ -1,6 +1,6 @@
 package cyou.equinox;
 
-public enum EUIManagerState {
+public enum EUIManagerScene {
     MAIN_MENU,
     OPTIONS,
     PAUSED_GAME,
